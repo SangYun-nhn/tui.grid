@@ -33,6 +33,7 @@ export interface RowAttributes {
   checkDisabled: boolean;
   className: { row: string[]; column: Dictionary<string[]> };
   height?: number;
+  tree?: TreeRowInfo;
 }
 
 export type RowAttributeValue = RowAttributes[keyof RowAttributes];
@@ -66,6 +67,7 @@ export interface CellRenderData {
   value: CellValue;
   editorOptions: Dictionary<any>;
   className: string;
+  tree?: TreeCellInfo;
 }
 
 export interface ViewRow {
@@ -96,6 +98,21 @@ export interface InvalidColumn {
 export interface InvalidRow {
   rowKey: RowKey;
   errors: InvalidColumn[];
+}
+
+export interface TreeRowInfo {
+  parentRowKey: RowKey;
+  childrenRowKeys: RowKey[];
+  expanded: boolean;
+}
+
+export interface TreeColumnInfo {
+  useIcon: boolean;
+}
+
+export interface TreeCellInfo {
+  indentWidth: number;
+  isLeaf: boolean;
 }
 
 export interface Data {
@@ -140,6 +157,7 @@ export interface ColumnInfo {
   defaultValue?: CellValue;
   sortable?: boolean;
   validation?: Validation;
+  tree?: TreeColumnInfo;
 }
 
 export interface SortOptions {
@@ -158,6 +176,7 @@ export interface Column {
   visibleColumnsBySide: VisibleColumnsBySide;
   readonly defaultValues: { name: string; value: CellValue }[];
   validationColumns: ColumnInfo[];
+  hasTreeColumn?: boolean;
 }
 
 export interface Relations {

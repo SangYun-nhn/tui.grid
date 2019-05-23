@@ -23,11 +23,18 @@ export function createStore(id: number, options: OptGrid): Store {
     copyOptions = {},
     summary: summaryOptions = {},
     selectionUnit = 'cell',
-    showDummyRows = false
+    showDummyRows = false,
+    treeColumnOptions = { name: '' }
   } = options;
   const { frozenBorderWidth } = columnOptions;
   const { height: summaryHeight, position: summaryPosition } = summaryOptions;
-  const column = createColumn(options.columns, columnOptions, rowHeaders, copyOptions);
+  const column = createColumn(
+    options.columns,
+    columnOptions,
+    rowHeaders,
+    copyOptions,
+    treeColumnOptions
+  );
   const data = createData(options.data || [], column);
   const dimension = createDimension({
     column,
