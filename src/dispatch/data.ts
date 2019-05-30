@@ -22,6 +22,7 @@ import { OptRow, OptAppendRow, OptRemoveRow } from '../types';
 import { createRawRow, createViewRow, createData } from '../store/data';
 import { notify } from '../helper/observable';
 import { getRowHeight } from '../store/rowCoords';
+import { traverseDescendants } from '../helper/treeData';
 
 export function setValue({ data }: Store, rowKey: RowKey, columnName: string, value: CellValue) {
   const targetRow = findProp('rowKey', rowKey, data.rawData);
@@ -190,7 +191,7 @@ export function appendRow(
   const { at = rawData.length } = options;
 
   const rawRow = createRawRow(row, rawData.length, defaultValues);
-  const viewRow = createViewRow(rawRow, allColumnMap);
+  const viewRow = createViewRow(rawRow, allColumnMap, rawData);
 
   rawData.splice(at, 0, rawRow);
   viewData.splice(at, 0, viewRow);
@@ -294,4 +295,42 @@ export function setRowHeight({ data, rowCoords }: Store, rowIndex: number, rowHe
   rowCoords.heights[rowIndex] = rowHeight;
 
   notify(rowCoords, 'heights');
+}
+
+export function expand({ data }: Store, rowKey: RowKey) {
+  const { rawData } = data;
+  const row = findProp('rowKey', rowKey, rawData);
+
+  if (row) {
+    const { tree } = row._attributes;
+
+    if (tree && tree.expanded === false) {
+      tree.expanded = true;
+    }
+  }
+}
+
+export function collapse(store: Store, rowKey: RowKey) {
+  const { data, rowCoords, focus } = store;
+  const { rawData } = data;
+  const { heights } = rowCoords;
+  const { rowIndex } = focus;
+  const row = findProp('rowKey', rowKey, rawData);
+
+  if (row) {
+    const { tree } = row._attributes;
+
+    if (tree && tree.expanded === true) {
+      tree.expanded = false;
+
+      let index = rowIndex || 0;
+
+      traverseDescendants(rawData, row, () => {
+        index += 1;
+        heights[index] = 0;
+      });
+
+      notify(rowCoords, 'heights');
+    }
+  }
 }

@@ -161,6 +161,7 @@ export function create(
   return observable({
     frozenCount: columnOptions.frozenCount || 0,
     allColumns,
+    treeColumnName: treeColumnOptions.name || '',
 
     get allColumnMap() {
       return createMapFromArray(this.allColumns, 'name') as Dictionary<ColumnInfo>;
@@ -195,10 +196,6 @@ export function create(
 
     get validationColumns() {
       return allColumns.filter(({ validation }) => !!validation);
-    },
-
-    get hasTreeColumn() {
-      return !!allColumns.filter(({ name }) => treeColumnOptions.name === name).length;
     }
   });
 }
